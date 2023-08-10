@@ -1,0 +1,163 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+::before,
+::after {
+  box-sizing: inherit;
+}
+
+/* Update these values to control the animation behavior */
+:root {
+  --animation-duration: 3s;
+  --animation-delay: 5s;
+}
+
+body {
+  margin: 0;
+  height: 200vh;
+  /* To make the `<body>` the containing block for the absolutely positioned elements
+  (absolutely and fixedly positioned elements) */
+  position: relative;
+}
+
+div {
+  width: 150px;
+  height: 150px;
+  line-height: 150px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 1.5rem;
+  text-align: center;
+  color: #333;
+  border: 2px solid #333;
+  border-radius: 75px;
+}
+
+.static1,
+.static2,
+.absolute {
+  color: #fff;
+}
+
+.static1,
+.static2 {
+  background: rgba(255, 0, 0);
+}
+
+.relative {
+  position: relative;
+  top: 20px;
+  left: 20px;
+  animation: var(--animation-duration) var(--animation-delay) rel;
+  animation-fill-mode: both;
+  background: rgba(0, 255, 0);
+}
+
+.absolute {
+  position: absolute;
+  top: calc(100% - 150px);
+  left: calc(100% - 150px);
+  animation: var(--animation-duration) var(--animation-delay) abs;
+  animation-fill-mode: both;
+  background: rgba(0, 0, 255);
+}
+
+.fixed {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: var(--animation-duration) var(--animation-delay) fix;
+  animation-fill-mode: both;
+  background: rgba(255, 255, 0);
+}
+
+.sticky {
+  position: sticky;
+  top: 25%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+  animation: var(--animation-duration) var(--animation-delay) sti;
+  animation-fill-mode: both;
+  background: rgba(0, 255, 255);
+}
+
+.static1,
+.static2 {
+  animation: var(--animation-duration) var(--animation-delay) sta;
+  animation-fill-mode: both;
+}
+
+/* Animations */
+@keyframes rel {
+  to {
+    /* I know I could've used -83px for the margin instead of setting `top: 0;` */
+    margin-block-start: -63px;
+    top: 0;
+    left: 0;
+    background: rgba(0, 255, 0, 0.8);
+  }
+}
+
+@keyframes abs {
+  to {
+    /* 150px - 63px = 87px  */
+    top: 87px;
+    left: 100px;
+    background: rgba(0, 0, 255, 0.8);
+  }
+}
+
+@keyframes fix {
+  to {
+    /*  */
+    top: 87px;
+    left: 200px;
+    transform: none;
+    background: rgba(255, 255, 0, 0.8);
+  }
+}
+
+@keyframes sti {
+  to {
+    top: 87px;
+    left: 300px;
+    transform: none;
+    margin-block-start: -213px;
+    background: rgba(0, 255, 255, 0.8);
+  }
+}
+
+@keyframes sta {
+  to {
+    width: 450px;
+  }
+}
+
+/* 
+  Read only if you're curious about the animation 🤓
+
+  Q. What is the initial distance between _Static #1_ and _Static #2_?
+  A. 150px + 150px = 300px, where
+    150px is the reserved space for the relatively positioned element,
+    150px is the reserved space for the stickily positioned element,
+
+    This is because they're not removed from the normal flow.
+  
+  Q. What is the final distance between _Static #1_ and _Static #2_?
+  A. 150px - (63px * 2) = 24px, where
+    150px is the height of the positioned elements
+    (63px * 2) is the total height of the overlapping area between
+    the static and the positioned elements.
+
+  We need to move _Static #2_ up by 300px - 24px = 276px up
+
+  But we have already shifted _Relative_ by -63px using margin (remember that 
+  offset properties do not affect neighboring elements but margins do) which
+  gives us 276px - 63px = 213px;
+
+  This is the value of `margin-block-start` we have to set for the
+  stickily positioned element! Since we want to move it up, the value
+  should be negative.
+*/
